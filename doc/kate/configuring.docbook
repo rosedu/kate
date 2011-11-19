@@ -1,0 +1,281 @@
+<chapter id="configuring-kate">
+<chapterinfo>
+<authorgroup>
+<author>&Anders.Lund; &Anders.Lund.mail;</author>
+<!-- TRANS:ROLES_OF_TRANSLATORS -->
+</authorgroup>
+</chapterinfo>
+<title>Configuring &kate;</title>
+
+<sect1 id="configuring-overview">
+<title>Overview</title>
+<para>
+<indexterm>
+<primary>configure</primary>
+<secondary>settings</secondary>
+<tertiary>preferences</tertiary></indexterm>
+<anchor id="find"/>
+<anchor id="find-again"/>
+<!-- <anchor id="print"/> -->
+<anchor id="replace"/>
+<!-- <anchor id="save"/> -->
+<anchor id="undo"/>
+<anchor id="redo"/>
+&kate; offers several means of tweaking the application to behave as desired.
+The most important ones are:
+</para>
+
+<variablelist>
+<varlistentry>
+<term id="configure">The Configuration Dialog</term>
+<listitem><para>The main configuration tool, allowing you to configure the &kate; application,
+the editor component and the usage of plugins.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term id="settings">The <guimenu>Settings</guimenu> Menu</term>
+<listitem><para>Allows you to change often used settings, and to
+launch the configuration dialogs.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>The <guimenu>View</guimenu> Menu</term>
+<listitem><para>Allows you to split the current frame, as well as to
+display the icons and line numbers pane for the currently edited
+document.</para></listitem>
+</varlistentry>
+</variablelist>
+
+<para>The embedded terminal is using the configuration defined in the
+&systemsettings;, and may be configured by clicking the
+<mousebutton>right</mousebutton> mouse button to display a context menu.</para>
+
+</sect1>
+
+<sect1 id="configuring-kate-configdialog">
+<title>The Main Configuration Dialog</title>
+
+<mediaobject>
+<imageobject>
+<imagedata format="PNG" fileref="configdialog01.png"/>
+</imageobject>
+</mediaobject>
+
+<para>The &kate; configuration dialog displays a tree of topics on the
+left, and a configuration page corresponding to the selected topic on
+the right.</para>
+
+<para>The configuration is divided into two groups, namely
+<itemizedlist>
+<listitem><para><link linkend="config-dialog">Application configuration</link>
+</para></listitem>
+<listitem><para><link linkend="config-dialog-editor">Editor component configuration</link></para></listitem>
+
+</itemizedlist>
+
+</para>
+
+</sect1>
+
+<sect1 id="config-dialog">
+<title>The &kate; Application Configuration</title>
+<para>This group contains pages to configure the main &kate; application</para>
+
+<sect2 id="config-dialog-general">
+<title>General</title>
+<para>This section contains a few global options for &kate;</para>
+
+<variablelist>
+
+<varlistentry>
+<term><anchor id="config-general-behavior"/>
+<guilabel>Behavior</guilabel></term>
+<listitem>
+<variablelist>
+
+<varlistentry>
+<term><anchor id="config-dialog-general-warn-mod"/>
+<guilabel>Warn about files modified by foreign processes</guilabel></term>
+<listitem><para>When enabled, &kate; will notify you about files modified
+from outside the application whenever the main window receives input focus.
+You will be able to deal with several modified files at once, you
+can reload, save or discard changed files in groups.</para>
+<para>If not enabled, &kate; will prompt you for action when a externally
+modified file receives focus within the application.</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
+</listitem>
+</varlistentry><!-- /behavior group -->
+
+<varlistentry>
+<term><anchor id="config-general-meta-data"/>
+<guilabel>Meta Information</guilabel></term>
+ <listitem>
+
+<variablelist>
+<varlistentry>
+<term><anchor id="config-general-keep-meta-information"/>
+<guilabel>Keep meta-information past sessions</guilabel></term>
+<listitem><para>When enabled, &kate; will store meta data such as bookmarks
+and session configuration even when you close your documents. The data
+will be used if the document is unchanged when reopened.</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term><anchor id="config-general-delete-meta-information-after"/>
+<guilabel>Delete unused meta information after</guilabel></term>
+<listitem><para>Set the maximum number of days to keep meta information
+for unopen files. This helps keeping the database of meta information
+reasonably sized.</para></listitem>
+</varlistentry>
+
+</variablelist>
+
+</listitem>
+</varlistentry><!-- /meta data group -->
+
+<varlistentry>
+<term><anchor id="config-general-default-text-editing-component"/>
+<guilabel>Default text-editing component</guilabel></term>
+<listitem><para>Select the text-editing component used by &kate;.  By
+default, it is configured to use the system default text-editing component as
+configured in &systemsettings;.</para></listitem>
+</varlistentry>
+
+</variablelist>
+</sect2>
+
+<sect2 id="config-dialog-sessions">
+<title>Sessions</title>
+
+<para>This section contains options related to <link
+linkend="fundamentals-using-sessions">using sessions</link>.</para>
+
+<variablelist>
+
+<varlistentry>
+<term><anchor id="config-dialog-sessions-elements"/>
+<guilabel>Elements of Sessions</guilabel></term>
+<listitem>
+<variablelist>
+<varlistentry>
+<term><guilabel>Include window configuration</guilabel></term>
+<listitem><para>If enabled, &kate; will save the window configuration
+with each session.</para></listitem>
+</varlistentry>
+</variablelist>
+</listitem>
+</varlistentry><!-- /elements of sessions -->
+
+<varlistentry>
+<term><anchor id="config-dialog-sessions-startup-behavior"/>
+<guilabel>Behavior on Application Startup</guilabel></term>
+<listitem>
+<para>Select how you want &kate; to behave at startup. This setting can be
+overridden by specifying what to do on the <link
+linkend="command-line-options">command line</link>.</para>
+<variablelist>
+<varlistentry>
+<term><guilabel>Start new session</guilabel></term>
+<listitem><para>With this option, &kate; will start a new, unnamed session
+when you start it.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Load last-used session</guilabel></term>
+<listitem><para>&kate; will use the most recently opened session at
+startup. This is good if you want to use the same session always or switch
+rarely.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Manually choose a session</guilabel></term>
+<listitem><para>&kate; will display a small dialog that lets you choose
+your preferred session, or load the default session if none have been saved.
+This is the default behavior. Nice if you use a lot of different sessions
+frequently.</para></listitem>
+</varlistentry>
+</variablelist>
+</listitem>
+</varlistentry><!-- /startup behavior -->
+
+</variablelist>
+<para>The changes to the session data (opened files and if enabled,
+window configuration) will always be saved.</para>
+
+</sect2>
+
+<sect2 id="config-dialog-treeview">
+<title>Tree View</title> <!-- Tree View was renamed to Documents - http://commit-digest.org/issues/2011-08-28/ -->
+<!-- Tree View plugin http://kate-editor.org/2010/09/10/tree-view-plugin-introduction/ -->
+<variablelist>
+<varlistentry>
+<term><guilabel>Background Shading</guilabel></term>
+<listitem><para>This section allows you to enable or disable the background
+shading visualization of your recent activity, and chose which colors to use if
+enabled. See the section about <link
+linkend="kate-mdi-tools-file-list">The Document List</link> for more about
+this feature.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Sort By</guilabel></term>
+<listitem><para>Set how you want the document list sorted. This can be set
+from the &RMB; menu in the document list as well.</para></listitem>
+</varlistentry>
+<!--
+View Mode - Tree View / List View missing
+  -->
+<varlistentry>
+<term><guilabel>Show Full Path</guilabel></term>
+<listitem><para>When enabled, in tree mode, top level folders will show up
+with their full path rather than just the last folder name.</para></listitem>
+</varlistentry>
+
+</variablelist>
+
+</sect2>
+
+<sect2 id="config-dialog-plugins">
+<title>Plugins</title>
+
+<para>This page provides a list of installed plugins for the &kate;
+application. Each plug-in is represented with its name and a short description.
+You can check the checkbox with an item to enable the plug-in it represents.
+</para>
+
+<para>If a plug-in provides configuration options, a section to access those
+will appear as a child of this page.</para>
+
+</sect2>
+
+<sect2 id="config-dialog-general-sync-konsole">
+<title>Terminal</title>
+
+<para>This page is only displayed by the Terminal Tool View plugin, which is
+enabled by default.</para>
+
+<variablelist>
+<varlistentry>
+<term>
+<guilabel>Automatically synchronize the terminal with the current document when possible</guilabel></term>
+<listitem><para>This will cause the built-in terminal to
+<command>cd</command> into the directory of the active document when
+launched and when a new document gets the focus. If not enabled, you
+have to do all your navigation in the terminal on your own.
+</para></listitem>
+</varlistentry>
+
+<varlistentry>
+<term><guilabel>Set EDITOR environment variable to 'kate -b'</guilabel></term>
+<listitem><para>This sets the <envar>EDITOR</envar> environment variable so programs
+run in the built-in terminal that automatically open a file in an editor will open
+them in &kate; instead of the default editor configured in your shell.  You will
+not be able to continue using the terminal until you have closed the file in &kate;,
+so the calling program is aware you have finished editing the file.</para></listitem>
+</varlistentry>
+
+</variablelist>
+</sect2>
+</sect1>
+
+&configuring-part-sections;
+
+</chapter>

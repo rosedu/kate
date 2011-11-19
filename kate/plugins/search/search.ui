@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SearchDialog</class>
+ <widget class="QWidget" name="SearchDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>449</width>
+    <height>118</height>
+   </rect>
+  </property>
+  <layout class="QGridLayout" name="gridLayout" rowstretch="0,1" columnstretch="0,1,0,0,0,0">
+   <property name="margin">
+    <number>0</number>
+   </property>
+   <item row="0" column="1">
+    <widget class="KHistoryComboBox" name="searchCombo">
+     <property name="editable">
+      <bool>true</bool>
+     </property>
+     <property name="autoCompletion">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="4">
+    <widget class="QToolButton" name="optionsButton">
+     <property name="text">
+      <string>Options</string>
+     </property>
+     <property name="popupMode">
+      <enum>QToolButton::InstantPopup</enum>
+     </property>
+     <property name="toolButtonStyle">
+      <enum>Qt::ToolButtonTextBesideIcon</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="5">
+    <widget class="QToolButton" name="displayOptions">
+     <property name="text">
+      <string>...</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="autoRaise">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="2">
+    <widget class="KPushButton" name="searchButton">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="text">
+      <string>Search</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="3">
+    <widget class="QStackedWidget" name="locationAndStop">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="page_3">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <property name="margin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="KComboBox" name="searchPlaceCombo">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <item>
+          <property name="text">
+           <string>in Open files</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>in Folder</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="page_4">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <property name="margin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="KPushButton" name="stopButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Stop</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QToolButton" name="newTabButton">
+     <property name="text">
+      <string>...</string>
+     </property>
+     <property name="autoRaise">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="6">
+    <widget class="QStackedWidget" name="stackedWidget">
+     <property name="currentIndex">
+      <number>1</number>
+     </property>
+     <widget class="QWidget" name="page">
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="margin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="KTabWidget" name="resultTabWidget">
+         <property name="tabsClosable">
+          <bool>true</bool>
+         </property>
+         <property name="movable">
+          <bool>true</bool>
+         </property>
+         <property name="automaticResizeTabs">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="folderOptions">
+      <layout class="QGridLayout" name="gridLayout_3">
+       <property name="margin">
+        <number>0</number>
+       </property>
+       <item row="10" column="1">
+        <widget class="QLabel" name="filterLabel">
+         <property name="text">
+          <string>Filter</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="buddy">
+          <cstring>filterCombo</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="2" colspan="6">
+        <widget class="KComboBox" name="filterCombo">
+         <property name="editable">
+          <bool>true</bool>
+         </property>
+         <property name="insertPolicy">
+          <enum>QComboBox::InsertAtTop</enum>
+         </property>
+         <item>
+          <property name="text">
+           <string>*</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="12" column="2">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="1" column="1" colspan="7">
+        <widget class="Line" name="line">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="2">
+        <widget class="QCheckBox" name="recursiveCheckBox">
+         <property name="text">
+          <string>Recursive</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="3">
+        <widget class="QCheckBox" name="hiddenCheckBox">
+         <property name="text">
+          <string>Include hidden</string>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="4">
+        <widget class="QCheckBox" name="symLinkCheckBox">
+         <property name="text">
+          <string>Follow symbolic links</string>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="5">
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="8" column="7">
+        <widget class="QToolButton" name="currentFolderButton">
+         <property name="toolTip">
+          <string>Use the current document's path.</string>
+         </property>
+         <property name="autoRaise">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="QLabel" name="folderLabel">
+         <property name="text">
+          <string>Folder</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="buddy">
+          <cstring>folderRequester</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="2" colspan="4">
+        <widget class="KUrlComboRequester" name="folderRequester">
+         <property name="mode">
+          <set>KFile::Directory|KFile::ExistingOnly|KFile::LocalOnly</set>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="6">
+        <widget class="QToolButton" name="folderUpButton">
+         <property name="toolTip">
+          <string>Go one folder up.</string>
+         </property>
+         <property name="autoRaise">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>KUrlRequester</class>
+   <extends>QFrame</extends>
+   <header>kurlrequester.h</header>
+  </customwidget>
+  <customwidget>
+   <class>KPushButton</class>
+   <extends>QPushButton</extends>
+   <header>kpushbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>KUrlComboRequester</class>
+   <extends>KUrlRequester</extends>
+   <header>kurlrequester.h</header>
+  </customwidget>
+  <customwidget>
+   <class>KComboBox</class>
+   <extends>QComboBox</extends>
+   <header>kcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>KTabWidget</class>
+   <extends>QTabWidget</extends>
+   <header>ktabwidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>KHistoryComboBox</class>
+   <extends>KComboBox</extends>
+   <header>khistorycombobox.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>searchCombo</tabstop>
+  <tabstop>searchButton</tabstop>
+  <tabstop>searchPlaceCombo</tabstop>
+  <tabstop>optionsButton</tabstop>
+  <tabstop>displayOptions</tabstop>
+  <tabstop>folderRequester</tabstop>
+  <tabstop>currentFolderButton</tabstop>
+  <tabstop>filterCombo</tabstop>
+  <tabstop>recursiveCheckBox</tabstop>
+  <tabstop>hiddenCheckBox</tabstop>
+  <tabstop>symLinkCheckBox</tabstop>
+  <tabstop>stopButton</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>
