@@ -1,0 +1,330 @@
+/***************************************************************************
+                           plugin_katexmlcheck.cpp - checks XML files using xmllint
+                           -------------------
+	begin                : 2002-07-06
+	copyright            : (C) 2002 by Daniel Naber
+	email                : daniel.naber@t-online.de
+ ***************************************************************************/
+
+/***************************************************************************
+ This program is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License
+ as published by the Free Software Foundation; either version 2
+ of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ ***************************************************************************/
+
+
+#include "plugin_katexmledit.h"
+#include <QHBoxLayout>
+#include "plugin_katexmledit.moc"
+
+
+
+#include <cassert>
+#include <QTextDocumentWriter>
+#include <qfile.h>
+#include <qinputdialog.h>
+#include <qregexp.h>
+#include <qstring.h>
+#include <qtextstream.h>
+#include <kactioncollection.h>
+//Added by qt3to4:
+#include <Q3CString>
+#include <QApplication>
+
+#include<QStack>
+
+#include<ktexteditor/searchinterface.h>
+
+#include <ktexteditor/highlightinterface.h>
+
+#include <kdefakes.h> // for setenv
+#include <kaction.h>
+#include <kcursor.h>
+#include <kdebug.h>
+#include <k3dockwidget.h>
+#include <kcomponentdata.h>
+#include <klocale.h>
+#include <kmessagebox.h>
+#include <kstandarddirs.h>
+#include <ktemporaryfile.h>
+#include <kpluginfactory.h>
+#include <kprocess.h>
+
+
+
+
+K_PLUGIN_FACTORY(PluginKateXMLEditFactory, registerPlugin<PluginKateXMLEdit>();)
+K_EXPORT_PLUGIN(PluginKateXMLEditFactory("katexmledit"))
+
+PluginKateXMLEdit::PluginKateXMLEdit( QObject* parent, const QVariantList& )
+	: Kate::Plugin ( (Kate::Application *)parent )
+{
+}
+
+
+PluginKateXMLEdit::~PluginKateXMLEdit()
+{
+}
+Kate::PluginView *PluginKateXMLEdit::createView(Kate::MainWindow *mainWindow)
+{
+    return new PluginKateXMLEditView(mainWindow);
+}
+PluginKateXMLEditView::PluginKateXMLEditView(Kate::MainWindow *mainwin)
+    : Kate::PluginView (mainwin), Kate::XMLGUIClient(PluginKateXMLEditFactory::componentData()),win(mainwin)
+{
+
+    mainWindow()->guiFactory()->addClient(this);
+
+    QList<KTextEditor::Document*> lst = Kate::application()->documentManager()->documents();
+    KTextEditor::Document *dcm=lst[0];
+    connect(dcm, SIGNAL(modifiedChanged(KTextEditor::Document*)), this, SLOT(documentChanged()) );
+
+
+}
+
+PluginKateXMLEditView::~PluginKateXMLEditView()//destructor
+{
+    mainWindow()->guiFactory()->removeClient( this );
+}
+void PluginKateXMLEditView::documentChanged()
+{
+        KTextEditor::View *kv = win->activeView();
+
+        //kDebug() << "slotUpdate() (not implemented yet)";//kDebug()<<"";
+
+   	if( ! kv ) {
+                kDebug() << "\n\nWarning: no Kate::View\n\n";
+   		return;
+        }
+        kDebug()<<"This happends";
+        connect(kv, SIGNAL(cursorPositionChanged(KTextEditor::View*,KTextEditor::Cursor)), this, SLOT(characterChanged()));
+
+
+        QList<KTextEditor::Document*> lst = Kate::application()->documentManager()->documents();
+        KTextEditor::Document *dcm=lst[0];
+        KTextEditor::Range range = dcm->documentRange();
+        QVector<KTextEditor::Range> rangeList = rangesList(dcm, range);//toate tag-urile valide din range
+        hilightSeveralRanges(dcm,  wrongRangesResult(dcm, rangeList));
+}
+
+/**
+  *rangeList returns a Qvector with all XML Valid tags
+  *within range range
+  *It uses a basic regex, just for testing
+*/
+QVector<KTextEditor::Range> PluginKateXMLEditView::rangesList(KTextEditor::Document *doc, KTextEditor::Range range)
+{
+    KTextEditor::SearchInterface *sface;
+    KTextEditor::Range auxRange = range, findedRange;
+    QVector<KTextEditor::Range> rangeList;// Range list to be returned
+    sface = qobject_cast<KTextEditor::SearchInterface*>(doc);//object to search in
+    findedRange = ((sface->searchText(auxRange, "<[/]?[A-Za-z0-9]+>", KTextEditor::Search::Regex)).at(0));
+
+    while( findedRange != KTextEditor::Range(-1,-1,-1,-1) )
+    {
+        findedRange = ((sface->searchText(auxRange, "<[/]?[A-Za-z0-9]+>", KTextEditor::Search::Regex)).at(0));
+        rangeList.append(findedRange);
+        auxRange = KTextEditor::Range(findedRange.end(), range.end());
+    }
+    if(rangeList.size() >0)
+        if(rangeList.at(rangeList.size()-1) == KTextEditor::Range(-1,-1,-1,-1))
+            rangeList.remove(rangeList.size()-1);
+
+    return rangeList;
+}
+
+/**
+Search for a QString in a stack of ranges
+O(n) complexity
+*/
+bool PluginKateXMLEditView::findQStringInStack(KTextEditor::Document *doc, QStack<KTextEditor::Range> ranges, QString s)
+{
+    for(int i = 0; i < ranges.size(); ++i)
+        if( s.compare( doc->text(ranges.at(i)).mid(1,doc->text(ranges.at(i)).size()-2) ) == 0) return true;
+    return false;
+}
+
+QVector<KTextEditor::Range> PluginKateXMLEditView::wrongRangesResult(KTextEditor::Document *doc, QVector<KTextEditor::Range> vec)
+{
+    kDebug()<<"wrongRangeResult method is happening\n";
+    QVector<KTextEditor::Range> wr;
+    if( vec.isEmpty() )
+    {
+        return wr;
+    }
+    QStack<KTextEditor::Range> wrs;
+    QString s, sc;
+    //kDebug()<<"\n\n";
+
+    for(int i = 0; i < vec.size(); ++i)
+    {
+        //entire tag
+        s = doc->text(vec.at(i));
+
+        //without open-angle brackets
+        s = s.mid(1, s.size()-2);
+
+        //opening tag
+        if(s.at(0) != '/' )//tested
+        {
+            wrs.push(vec.at(i));
+            //kDebug()<<"Opening tag"<<s<<"\n";
+        }
+        else//closing tag
+        {
+            sc =s.mid(1,s.size());//without '/'
+            //kDebug()<<"Closing tag"<<sc<<"\n";
+
+            //if the stack is empty and a closing tag has been found it is wrong
+            if(wrs.isEmpty())//tested
+            {
+
+                wr.append(vec.at(i));
+                continue;
+                //kDebug()<<"\nWrong range"<<vec.at(i)<<"\n";
+            }
+
+            /**
+            if the closing tag is the same as the tag from the top of the stack
+            this happen frequently
+            */
+
+            if( sc.compare(doc->text(wrs.top()).mid(1,doc->text(wrs.top()).size()-2)) == 0)//tested
+            {
+                wrs.pop();
+                //kDebug()<<"\nCorrect";
+            }
+            else
+            {
+                //kDebug()<<"The top of the stack is different";
+
+                if( findQStringInStack(doc, wrs, sc) == true)
+                {
+                    //kDebug()<<"\n\nString found\n\n";
+
+                    while(doc->text(wrs.top()).mid(1,doc->text(wrs.top()).size()-2).compare(sc) != 0)
+                    {
+                        wr.append(wrs.pop());
+
+                    }
+                    wrs.pop();
+
+                }
+                else
+                {
+                    wr.append(vec.at(i));
+                }
+            }
+
+        }
+        //kDebug()<<wrs;
+        //kDebug()<<s;
+    }
+
+        while(!wrs.isEmpty())
+        {
+            wr.append(wrs.pop());
+        }
+
+        //kDebug()<<"\n^^^^^^^^^^^^^^^^^^^^^^^\n";
+        //kDebug()<<"\n\nFinal wrong ranges:"<< wr;
+        //kDebug()<<"\n***********************\n";
+
+
+    return wr;
+}
+
+/**
+Hilight all the ranges from Qvector ranges
+*/
+void PluginKateXMLEditView::hilightSeveralRanges(KTextEditor::Document *doc, QVector<KTextEditor::Range> ranges)
+{
+    resetHighlight();
+    for(int i = 0; i < ranges.size(); ++i)
+            highlightRange(doc, ranges.at(i));
+}
+
+
+
+/**
+  *hilight the rng range from the document dcm
+*/
+void PluginKateXMLEditView::highlightRange(KTextEditor::Document* dcm, KTextEditor::Range rng)
+{
+        KTextEditor::MovingInterface* miface = qobject_cast<KTextEditor::MovingInterface*>(dcm);
+        KTextEditor::Attribute::Ptr attr(new KTextEditor::Attribute());
+        attr->setBackground(Qt::red);
+        KTextEditor::MovingRange* mr = miface->newMovingRange(rng);
+        mr->setAttribute(attr);
+        mr->setZDepth(-10000.0); // Set the z-depth to slightly worse than the selection
+        mr->setAttributeOnlyForViews(true);
+        m_hilightedRanges.append(mr);
+}
+void PluginKateXMLEditView::resetHighlight()
+{
+    qDeleteAll(m_hilightedRanges);
+    m_hilightedRanges.clear();
+}
+void PluginKateXMLEditView::generalWrongRanges(QVector<KTextEditor::Range> vec, KTextEditor::Range selectiveRange)
+{
+    for(int i = 0; i < m_wrongRanges.size(); ++i)
+        if(selectiveRange.contains( m_wrongRanges.at(i))) m_wrongRanges.remove(i);
+
+    for(int i = 0; i < vec.size(); ++i)
+        if(!m_wrongRanges.contains(vec.at(i)) ) m_wrongRanges.append(vec.at(i));
+
+}
+
+void PluginKateXMLEditView::characterChanged( )
+{
+    QList<KTextEditor::Document*> lst = Kate::application()->documentManager()->documents();
+    KTextEditor::Document *dcm=lst[0];
+        //KTextEditor::View *kv = win->activeView();
+        //kDebug()<<"\n\nAsta se intampla de fiecare data cand se schimba cursorul\n\n";
+        //XMLParser::findMatch(dcm, XMLParser::getNextTag(dcm, KTextEditor::Cursor(0,0), dcm->documentEnd()), );
+
+            //daca e gasita perechea
+        KTextEditor::Range prevTag =XMLParser::getPreviousTag(dcm,KTextEditor::Cursor(0, 0), win->activeView()->cursorPosition());
+        KTextEditor::Range findedRange = XMLParser::findMatch(dcm,prevTag);
+        if(findedRange != KTextEditor::Range(-1, -1, -1, -1))//daca a fost gasi
+        {
+                //kDebug()<< rangesList(dcm,  findedRange.encompass(prevTag));
+
+                //kDebug()<<wrongRangesResult(dcm, rangesList(dcm,  findedRange.encompass(prevTag)));
+
+
+            generalWrongRanges(wrongRangesResult(dcm, rangesList(dcm, prevTag.encompass(findedRange))),prevTag.encompass(findedRange));
+            hilightSeveralRanges(dcm,  m_wrongRanges);
+            kDebug()<<"wrong ranges: "<<m_wrongRanges;
+
+        }
+        else
+        {
+            if(prevTag != KTextEditor::Range(-1, -1, -1, -1) && !m_wrongRanges.contains(prevTag))
+                m_wrongRanges.append(prevTag);
+
+            //generalWrongRanges(wrongRangesResult(dcm,  rangesList(dcm, prevTag.encompass(findedRange))));
+            hilightSeveralRanges(dcm,  m_wrongRanges);
+
+        }
+
+
+        //KTextEditor::Range range = dcm->documentRange();
+        //QVector<KTextEditor::Range> rangeList = rangesList(dcm, range);//toate tag-urile valide din range
+        //hilightSeveralRanges(dcm,  m_wrongRanges);
+        //kDebug()<<m_wrongRanges<<"\n";
+
+
+}
+
+

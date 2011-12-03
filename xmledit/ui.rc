@@ -1,0 +1,4 @@
+<!DOCTYPE kpartgui>
+<gui name="katexmledit" library="libkatexmleditplugin" version="4">
+
+</gui>

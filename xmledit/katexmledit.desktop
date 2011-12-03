@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Service
+ServiceTypes=Kate/Plugin
+X-KDE-Library=katexmleditplugin
+X-Kate-Version=2.9
+Name=XML Validation
+Name[en_GB]=XML Edit tool
+Comment[en_GB]=Help editing xml files
+
